@@ -5,7 +5,7 @@ const todos = (state = [], action) => {
                 ...state,
                 {
                     id:action.id,
-                    textt:action.text,
+                    text:action.text,
                     completed:false
                 }
             ]

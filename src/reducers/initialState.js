@@ -1,7 +1,7 @@
 export default {
     todos:[
         {
-            id:1,
+            id:0,
             text:'Ejemplo...',
             completed:false
         }
