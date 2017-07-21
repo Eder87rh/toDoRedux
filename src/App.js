@@ -8,28 +8,103 @@ import {
 import { StyleSheet, View, ScrollView } from 'react-native'
 
 import * as actions from './actions/index'
-import KeyboardSpacer from 'react-native-keyboard-spacer'
-
+import Actives from './components/actives'
+import Completed from './components/completed'
+import All from './components/all';
 
 
 
 class App extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props)
-
-    this.state ={
-      newTodo:null
+    this.state = {
+      selectedTab: this.props.filter,
+      todos: this.props.todos
     }
   }
 
-  checkAsCompleted = (id) => {
+  _toggleTodo = (id) => {
     this.props.actions.toggleTodo(id)
   }
 
-  addTodo = () => {
-    this.props.actions.addTodo(this.state.newTodo)
-    this.setState({newTodo: null});
+  _addTodo = (text) => {
+    this.props.actions.addTodo(text)
+    this.renderTasks();
+  }
+
+  _filter = (filter) => {
+    this.props.actions.setFilter(filter)
+  }
+
+  setTab = (text) => {
+    // this.setState({ selectedTab: text })
+    this._filter(text)
+
+
+    //alert(this.props.filter)
+    // alert(this.state.selectedTab)
+
+    // switch (text) {
+    //   case 'ACTIVE':
+    //     this.setState({ todos: this.props.todos.filter(t => !t.completed) })
+    //     break;
+    //   case 'COMPLETED':
+    //     this.setState({ todos: this.props.todos.filter(t => t.completed) })
+    //     break;
+    //   case 'ALL':
+    //     this.setState({ todos: this.props.todos })
+    //     break;
+    //   default:
+    // }
+
+  }
+
+  renderTasks = () => {
+    switch (this.state.selectedTab) {
+      case 'ACTIVE':
+        this.setState({ todos: this.props.todos.filter(t => !t.completed) })
+        break;
+      case 'COMPLETED':
+        this.setState({ todos: this.props.todos.filter(t => t.completed) })
+        break;
+      case 'ALL':
+        this.setState({ todos: this.props.todos })
+        break;
+      default:
+    }
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.todos !== this.state.todos) {
+      this.setState({ todos: nextProps.todos })
+    }
+
+    //alert(nextProps.filter)
+    if (nextProps.filter !== this.state.selectedTab) {
+      // alert(this.state.selectedTab)
+      this.setState({ selectedTab: nextProps.filter }, () => {
+        // alert(this.state.selectedTab)
+
+        switch (this.state.selectedTab) {
+          case 'ACTIVE':
+            this.setState({ todos: this.props.todos.filter(t => !t.completed) })
+            break;
+          case 'COMPLETED':
+            this.setState({ todos: this.props.todos.filter(t => t.completed) })
+            break;
+          case 'ALL':
+            this.setState({ todos: this.props.todos })
+            break;
+          default:
+        }
+
+
+
+      })
+
+    }
   }
 
 
@@ -44,51 +119,35 @@ class App extends Component {
             </Button>
           </Left>
           <Body>
-            <Title>To Do Redux</Title>
+            <Title>Todo Redux</Title>
           </Body>
           <Right />
         </Header>
         <Content contentContainerStyle={styles.container}>
 
-          <View style={styles.contentContainer}>
 
-            <List dataArray={this.props.todos}
-              renderRow={(todo) =>
-                <ListItem icon>
-                  <Left>
-                    <CheckBox checked={todo.completed} onPress={() => this.checkAsCompleted(todo.id)} />
-                  </Left>
-                  <Body>
-                    <Text>{todo.text}</Text>
-                  </Body>
-                </ListItem>
-              }>
-            </List>
-
-          </View>
-
-          <View style={styles.footer}>
-            <ScrollView scrollEnabled={false}>
-              <Item style={{ margin: 10, marginTop: 10, marginLeft: 10 }}>
-                <Input placeholder='New To Do' 
-                       onChangeText={(text) => {this.setState({newTodo:text})} }
-                       value={this.state.newTodo}
-                       onSubmitEditing={this.addTodo} 
-                       returnKeyType='send' />
-              </Item>
-              <Button block success onPress={this.addTodo} style={{ margin: 10, marginTop: 10, marginLeft: 10 }}>
-                <Text>Add</Text>
-              </Button>
-              <KeyboardSpacer/>
-            </ScrollView>
-          </View>
-
+          {/* {this.renderSelectedTab()}  */}
+          <All todos={this.state.todos}
+            addTodo={this._addTodo}
+            toggleTodo={this._toggleTodo} />
 
         </Content>
         <Footer>
           <FooterTab>
-            <Button full>
-              <Text>Footer</Text>
+            <Button active={this.state.selectedTab === 'ACTIVE'}
+              onPress={() => this.setTab('ACTIVE')}
+            >
+              <Text>Active</Text>
+            </Button>
+            <Button active={this.state.selectedTab === 'COMPLETED'}
+              onPress={() => this.setTab('COMPLETED')}
+            >
+              <Text>Completed</Text>
+            </Button>
+            <Button active={this.state.selectedTab === 'ALL'}
+              onPress={() => this.setTab('ALL')}
+            >
+              <Text>All</Text>
             </Button>
           </FooterTab>
         </Footer>
@@ -101,19 +160,14 @@ class App extends Component {
 var styles = StyleSheet.create({
   container: {
     flex: 1
-  },
-  contentContainer: {
-    flex: 1
-  },
-  footer: {
-    //height: 100
   }
 });
+
 
 function mapStateToProps(state, ownProps) {
   return {
     todos: state.todos,
-    filter: state.filter
+    filter: state.filter.type
   };
 }
 

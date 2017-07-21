@@ -1,11 +1,17 @@
 export default {
-    todos:[
-        {
-            id:0,
-            text:'Ejemplo...',
-            completed:false
+
+
+        todos: [
+            {
+                id: 0,
+                text: 'Example...',
+                completed: false
+            }
+        ],
+        filter: {
+            type:'ACTIVE'
         }
-    ],
-    filter:'SHOW_ALL'
+    
+
 
 }

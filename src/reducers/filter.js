@@ -1,10 +1,15 @@
-const filter = (state= 'SHOW_ALL',action) => {
+const filter = (state= {},action) => {
+    //alert(action.filter)
+    
     switch(action.type){
         case 'SET_FILTER':
-            return action.filter
+            return {...state,
+                    type: action.filter
+                }
         default:
             return state
     }
+        
 }
 
 export default filter

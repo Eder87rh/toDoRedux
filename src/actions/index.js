@@ -8,6 +8,8 @@ export const addTodo = text => {
 }
 
 export const setFilter = filter => {
+  
+ // alert(filter)
   return {
     type: 'SET_FILTER',
     filter
