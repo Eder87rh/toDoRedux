@@ -8,21 +8,10 @@ import {
 import { StyleSheet, View, ScrollView } from 'react-native'
 
 import * as actions from './actions/index'
-import Actives from './components/actives'
-import Completed from './components/completed'
-import All from './components/all';
-
+import TodosList from './components/TodosList'
 
 
 class App extends Component {
-
-  constructor(props) {
-    super(props)
-    this.state = {
-      selectedTab: this.props.filter,
-      todos: this.props.todos
-    }
-  }
 
   _toggleTodo = (id) => {
     this.props.actions.toggleTodo(id)
@@ -30,81 +19,10 @@ class App extends Component {
 
   _addTodo = (text) => {
     this.props.actions.addTodo(text)
-    this.renderTasks();
   }
 
   _filter = (filter) => {
     this.props.actions.setFilter(filter)
-  }
-
-  setTab = (text) => {
-    // this.setState({ selectedTab: text })
-    this._filter(text)
-
-
-    //alert(this.props.filter)
-    // alert(this.state.selectedTab)
-
-    // switch (text) {
-    //   case 'ACTIVE':
-    //     this.setState({ todos: this.props.todos.filter(t => !t.completed) })
-    //     break;
-    //   case 'COMPLETED':
-    //     this.setState({ todos: this.props.todos.filter(t => t.completed) })
-    //     break;
-    //   case 'ALL':
-    //     this.setState({ todos: this.props.todos })
-    //     break;
-    //   default:
-    // }
-
-  }
-
-  renderTasks = () => {
-    switch (this.state.selectedTab) {
-      case 'ACTIVE':
-        this.setState({ todos: this.props.todos.filter(t => !t.completed) })
-        break;
-      case 'COMPLETED':
-        this.setState({ todos: this.props.todos.filter(t => t.completed) })
-        break;
-      case 'ALL':
-        this.setState({ todos: this.props.todos })
-        break;
-      default:
-    }
-  }
-
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.todos !== this.state.todos) {
-      this.setState({ todos: nextProps.todos })
-    }
-
-    //alert(nextProps.filter)
-    if (nextProps.filter !== this.state.selectedTab) {
-      // alert(this.state.selectedTab)
-      this.setState({ selectedTab: nextProps.filter }, () => {
-        // alert(this.state.selectedTab)
-
-        switch (this.state.selectedTab) {
-          case 'ACTIVE':
-            this.setState({ todos: this.props.todos.filter(t => !t.completed) })
-            break;
-          case 'COMPLETED':
-            this.setState({ todos: this.props.todos.filter(t => t.completed) })
-            break;
-          case 'ALL':
-            this.setState({ todos: this.props.todos })
-            break;
-          default:
-        }
-
-
-
-      })
-
-    }
   }
 
 
@@ -126,26 +44,25 @@ class App extends Component {
         <Content contentContainerStyle={styles.container}>
 
 
-          {/* {this.renderSelectedTab()}  */}
-          <All todos={this.state.todos}
+          <TodosList todos={this.props.todos}
             addTodo={this._addTodo}
             toggleTodo={this._toggleTodo} />
 
         </Content>
         <Footer>
           <FooterTab>
-            <Button active={this.state.selectedTab === 'ACTIVE'}
-              onPress={() => this.setTab('ACTIVE')}
+            <Button active={this.props.filter.type === 'ACTIVE'}
+              onPress={() => this._filter('ACTIVE')}
             >
               <Text>Active</Text>
             </Button>
-            <Button active={this.state.selectedTab === 'COMPLETED'}
-              onPress={() => this.setTab('COMPLETED')}
+            <Button active={this.props.filter.type === 'COMPLETED'}
+              onPress={() => this._filter('COMPLETED')}
             >
               <Text>Completed</Text>
             </Button>
-            <Button active={this.state.selectedTab === 'ALL'}
-              onPress={() => this.setTab('ALL')}
+            <Button active={this.props.filter.type === 'ALL'}
+              onPress={() => this._filter('ALL')}
             >
               <Text>All</Text>
             </Button>
@@ -166,7 +83,19 @@ var styles = StyleSheet.create({
 
 function mapStateToProps(state, ownProps) {
   return {
-    todos: state.todos,
+    todos: state.todos.filter(todo => {
+      switch (state.filter.type) {
+        case 'ALL':
+          return true
+          break
+        case 'ACTIVE':
+          return !todo.completed
+          break
+        case 'COMPLETED':
+          return todo.completed
+          break
+      }
+    }),
     filter: state.filter.type
   };
 }

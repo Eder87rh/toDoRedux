@@ -1,6 +1,4 @@
 export default {
-
-
         todos: [
             {
                 id: 0,
@@ -11,7 +9,4 @@ export default {
         filter: {
             type:'ACTIVE'
         }
-    
-
-
 }

@@ -1,6 +1,4 @@
 const filter = (state= {},action) => {
-    //alert(action.filter)
-    
     switch(action.type){
         case 'SET_FILTER':
             return {...state,

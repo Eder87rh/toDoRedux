@@ -6,7 +6,7 @@ import {
 import { StyleSheet, View, ScrollView } from 'react-native'
 import KeyboardSpacer from 'react-native-keyboard-spacer'
 
-export default class actives extends Component {
+export default class TodosList extends Component {
 
     constructor(props) {
         super(props)
